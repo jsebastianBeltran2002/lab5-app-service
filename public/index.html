@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- PERSONALICE ESTA LINEA: ponga su nombre. Es la evidencia de la entrega. -->
+<title>Portal de notas · Nombre Apellido</title>
+<style>
+  :root { --azul:#2E74B5; --tinta:#1b2733; --gris:#5b6b7b; --borde:#d9e2ec; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+         color:var(--tinta); background:#f5f8fb; line-height:1.55; }
+  header { background:var(--azul); color:#fff; padding:28px 20px; }
+  header h1 { margin:0 0 4px; font-size:1.5rem; }
+  header p { margin:0; opacity:.9; font-size:.95rem; }
+  main { max-width:860px; margin:0 auto; padding:24px 20px 56px; }
+  .tarjeta { background:#fff; border:1px solid var(--borde); border-radius:10px;
+             padding:18px 20px; margin-bottom:18px; }
+  .tarjeta h2 { margin:0 0 12px; font-size:1.05rem; color:var(--azul); }
+  .campos { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; }
+  .campo { background:#f7fafd; border:1px solid var(--borde); border-radius:8px; padding:10px 12px; }
+  .campo span { display:block; font-size:.72rem; letter-spacing:.06em;
+                text-transform:uppercase; color:var(--gris); }
+  .campo strong { font-family:Consolas,"SF Mono",monospace; font-size:.95rem; word-break:break-all; }
+  label { display:block; font-size:.85rem; color:var(--gris); margin:10px 0 4px; }
+  input { width:100%; padding:9px 10px; border:1px solid var(--borde);
+          border-radius:6px; font-size:.95rem; font-family:inherit; }
+  button { margin-top:14px; background:var(--azul); color:#fff; border:0;
+           border-radius:6px; padding:10px 18px; font-size:.95rem; cursor:pointer; }
+  button:hover { background:#255e94; }
+  pre { background:#1E1E1E; color:#fff; padding:12px 14px; border-radius:8px;
+        font-family:Consolas,monospace; font-size:.82rem; overflow-x:auto; margin:14px 0 0; }
+  .pie { color:var(--gris); font-size:.82rem; text-align:center; }
+</style>
+</head>
+<body>
+<header>
+  <!-- PERSONALICE TAMBIEN ESTE TITULO -->
+  <h1>Portal de notas · Nombre Apellido</h1>
+  <p>Laboratorio 5 · Azure App Service, IaC y CI/CD · PEMU 2026</p>
+</header>
+
+<main>
+  <section class="tarjeta">
+    <h2>Quien esta respondiendo</h2>
+    <div class="campos" id="campos">
+      <div class="campo"><span>Version</span><strong id="version">…</strong></div>
+      <div class="campo"><span>Node</span><strong id="node">…</strong></div>
+      <div class="campo"><span>Sitio</span><strong id="sitio">…</strong></div>
+      <div class="campo"><span>Instancia</span><strong id="instancia">…</strong></div>
+      <div class="campo"><span>Region</span><strong id="region">…</strong></div>
+    </div>
+    <button onclick="cargarVersion()">Volver a consultar</button>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Registrar un estudiante</h2>
+    <label for="nombre">Nombre</label>
+    <input id="nombre" value="Ana Gomez">
+    <label for="notas">Notas separadas por coma (0 a 5)</label>
+    <input id="notas" value="4.0, 4.6, 3.8">
+    <button onclick="registrar()">Calcular y registrar</button>
+    <pre id="salida">Aun no ha registrado nada.</pre>
+  </section>
+
+  <p class="pie">Escuela Colombiana de Ingenieria Julio Garavito</p>
+</main>
+
+<script>
+async function cargarVersion() {
+  const r = await fetch('/api/version');
+  const d = await r.json();
+  for (const k of ['version', 'node', 'sitio', 'instancia', 'region']) {
+    document.getElementById(k).textContent = d[k];
+  }
+}
+
+async function registrar() {
+  const nombre = document.getElementById('nombre').value;
+  const notas = document.getElementById('notas').value
+    .split(',').map(t => parseFloat(t.trim())).filter(n => !Number.isNaN(n));
+  const r = await fetch('/api/estudiantes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, notas })
+  });
+  const d = await r.json();
+  document.getElementById('salida').textContent =
+    'HTTP ' + r.status + '\n' + JSON.stringify(d, null, 2);
+}
+
+cargarVersion();
+</script>
+</body>
+</html>
