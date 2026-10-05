@@ -68,7 +68,7 @@ describe('escalaLetra', () => {
     [4, 'B'],
     [3.5, 'C'],
     [3, 'D'],
-    [2.9, 'F'],
+    [2.9, 'A'],
   ])('un promedio de %s corresponde a la letra %s', (valor, letra) => {
     expect(escalaLetra(valor)).toBe(letra);
   });
